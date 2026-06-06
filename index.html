@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Mi Ágora Personal · Asistente Inteligente</title>
+    
+    <!-- Meta tags para instalación como app en iPhone -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mi Ágora">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%236c5ce7'/%3E%3Ctext x='50' y='67' font-size='45' text-anchor='middle' fill='white' font-weight='bold'%3E🧠%3C/text%3E%3C/svg%3E">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', system-ui, Helvetica, sans-serif;
+            background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0.8rem;
+        }
+        
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 2.5rem;
+            overflow: hidden;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .header {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 0.5px solid rgba(255,255,255,0.2);
+        }
+        
+        .icon-circle {
+            width: 55px;
+            height: 55px;
+            background: white;
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 0.3rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        /* Navegación tipo tabs */
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.2);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 0.8rem;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.75rem;
+        }
+        
+        .tab.active {
+            background: rgba(255,255,255,0.25);
+            border-bottom: 2px solid white;
+        }
+        
+        .panel {
+            display: none;
+            padding: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .panel.active-panel {
+            display: block;
+        }
+        
+        /* Tarjetas y elementos */
+        .card {
+            background: rgba(255,255,255,0.9);
+            border-radius: 1.5rem;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        input, textarea, select {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 2rem;
+            border: none;
+            background: #f0f2ff;
+            font-size: 0.85rem;
+        }
+        
+        button {
+            background: #5a67d8;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .icon-btn {
+            background: #48bb78;
+            margin-left: 0.3rem;
+        }
+        
+        .task-item, .contact-item, .goal-item {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.6rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #5a67d8;
+        }
+        
+        .completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+            border-left-color: #48bb78;
+        }
+        
+        .microphone-area {
+            background: rgba(255,255,255,0.2);
+            border-radius: 2rem;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .mic-circle {
+            background: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        
+        .photo-preview {
+            max-width: 80px;
+            border-radius: 1rem;
+            margin: 0.3rem;
+        }
+        
+        .footer-note {
+            text-align: center;
+            font-size: 0.6rem;
+            color: white;
+            padding: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 500px) {
+            .tab { font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <div class="icon-circle">🧠✨</div>
+        <div class="title">Mi Ágora Personal</div>
+        <div style="font-size:0.65rem; color:#e0d6ff;">Asistente con memoria local · Offline</div>
+    </div>
+    
+    <div class="tabs">
+        <div class="tab active" data-tab="home">🏠 Inicio</div>
+        <div class="tab" data-tab="tasks">📋 Tareas</div>
+        <div class="tab" data-tab="contacts">👥 Contactos</div>
+        <div class="tab" data-tab="goals">🎯 Metas</div>
+        <div class="tab" data-tab="files">📸 Archivos</div>
+    </div>
+    
+    <!-- Panel de inicio (asistente y recordatorios) -->
+    <div id="homePanel" class="panel active-panel">
+        <div class="microphone-area">
+            <div class="mic-circle" id="micMain">🎙️</div>
+            <div id="voiceStatus" style="color:white; font-size:0.7rem;">Toca para hablar con tu asistente</div>
+        </div>
+        <div class="card">
+            <strong>🧠 Asistente dice:</strong>
+            <div id="assistantMessage" style="margin-top:0.5rem;">Hola, soy tu asistente local. Puedo recordar tareas, contactos, metas y archivos. Pregúntame lo que necesites.</div>
+        </div>
+        <div class="card">
+            <strong>⏰ Próximos eventos</strong>
+            <div id="upcomingEvents"></div>
+        </div>
+    </div>
+    
+    <!-- Panel tareas -->
+    <div id="tasksPanel" class="panel">
+        <div class="input-group">
+            <input type="text" id="taskInput" placeholder="Nueva tarea...">
+            <input type="datetime-local" id="taskDateTime">
+            <button id="addTaskBtn">➕ Añadir</button>
+        </div>
+        <div id="tasksList"></div>
+    </div>
+    
+    <!-- Panel contactos -->
+    <div id="contactsPanel" class="panel">
+        <div class="input-group">
+            <input type="text" id="contactName" placeholder="Nombre">
+            <input type="email" id="contactEmail" placeholder="Email">
+            <input type="tel" id="contactPhone" placeholder="Teléfono">
+            <button id="addContactBtn">➕ Añadir</button>
+        </div>
+        <div id="contactsList"></div>
+    </div>
+    
+    <!-- Panel metas -->
+    <div id="goalsPanel" class="panel">
+        <div class="input-group">
+            <input type="text" id="goalTitle" placeholder="Meta...">
+            <input type="date" id="goalDeadline">
+            <button id="addGoalBtn">➕ Añadir meta</button>
+        </div>
+        <div id="goalsList"></div>
+    </div>
+    
+    <!-- Panel archivos (fotos y notas) -->
+    <div id="filesPanel" class="panel">
+        <div class="card">
+            <strong>📷 Guardar foto</strong>
+            <input type="file" id="photoUpload" accept="image/*" capture>
+            <div id="photoGallery" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;"></div>
+        </div>
+        <div class="card">
+            <strong>📝 Notas rápidas</strong>
+            <textarea id="quickNote" rows="2" placeholder="Escribe algo importante..."></textarea>
+            <button id="saveNoteBtn">Guardar nota</button>
+            <div id="notesList" style="margin-top:0.5rem;"></div>
+        </div>
+    </div>
+    
+    <div class="footer-note">
+        🧠 Todo se guarda localmente · Funciona sin internet · Tu información privada está solo en tu teléfono
+    </div>
+</div>
+
+<script>
+    // ========== INICIALIZAR LOCALSTORAGE ==========
+    let tasks = JSON.parse(localStorage.getItem('agora_tasks') || '[]');
+    let contacts = JSON.parse(localStorage.getItem('agora_contacts') || '[]');
+    let goals = JSON.parse(localStorage.getItem('agora_goals') || '[]');
+    let photos = JSON.parse(localStorage.getItem('agora_photos') || '[]');
+    let notes = JSON.parse(localStorage.getItem('agora_notes') || '[]');
+    
+    function saveAll() {
+        localStorage.setItem('agora_tasks', JSON.stringify(tasks));
+        localStorage.setItem('agora_contacts', JSON.stringify(contacts));
+        localStorage.setItem('agora_goals', JSON.stringify(goals));
+        localStorage.setItem('agora_photos', JSON.stringify(photos));
+        localStorage.setItem('agora_notes', JSON.stringify(notes));
+        renderAll();
+    }
+    
+    // ========== RENDERIZAR TODO ==========
+    function renderTasks() {
+        const container = document.getElementById('tasksList');
+        if (!container) return;
+        if (tasks.length === 0) { container.innerHTML = '<div class="card">✨ No hay tareas. Añade una.</div>'; return; }
+        container.innerHTML = tasks.map((task, idx) => `
+            <div class="task-item ${task.completed ? 'completed' : ''}">
+                <div><strong>${escapeHtml(task.text)}</strong> ${task.date ? `📅 ${task.date}` : ''}</div>
+                <div style="display:flex; gap:0.5rem; margin-top:0.3rem;">
+                    <button onclick="toggleTask(${idx})">${task.completed ? '↩️ Reabrir' : '✅ Completar'}</button>
+                    <button onclick="deleteTask(${idx})">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function renderContacts() {
+        const container = document.getElementById('contactsList');
+        if (!container) return;
+        if (contacts.length === 0) { container.innerHTML = '<div class="card">📇 Sin contactos aún.</div>'; return; }
+        container.innerHTML = contacts.map((c, idx) => `
+            <div class="contact-item">
+                <strong>${escapeHtml(c.name)}</strong><br>
+                📧 ${escapeHtml(c.email || '—')} · 📞 ${escapeHtml(c.phone || '—')}
+                <button onclick="deleteContact(${idx})" style="margin-top:0.3rem;">🗑️ Borrar</button>
+            </div>
+        `).join('');
+    }
+    
+    function renderGoals() {
+        const container = document.getElementById('goalsList');
+        if (!container) return;
+        if (goals.length === 0) { container.innerHTML = '<div class="card">🎯 Sin metas aún. Establece una.</div>'; return; }
+        container.innerHTML = goals.map((g, idx) => `
+            <div class="goal-item">
+                <strong>${escapeHtml(g.title)}</strong> ${g.deadline ? `📅 ${g.deadline}` : ''}
+                <div>${g.completed ? '✅ Completada' : '🔴 En curso'}</div>
+                <button onclick="toggleGoal(${idx})">${g.completed ? '↩️ Reabrir' : '🏆 Completar'}</button>
+                <button onclick="deleteGoal(${idx})">🗑️</button>
+            </div>
+        `).join('');
+    }
+    
+    function renderPhotos() {
+        const container = document.getElementById('photoGallery');
+        if (!container) return;
+        if (photos.length === 0) { container.innerHTML = '<div>📸 No hay fotos guardadas. Sube una.</div>'; return; }
+        container.innerHTML = photos.map((p, idx) => `
+            <div style="position:relative;">
+                <img src="${p.data}" class="photo-preview">
+                <button onclick="deletePhoto(${idx})" style="position:absolute; top:-5px; right:-5px; background:red; border-radius:50%; width:22px; height:22px;">✖</button>
+            </div>
+        `).join('');
+    }
+    
+    function renderNotes() {
+        const container = document.getElementById('notesList');
+        if (!container) return;
+        if (notes.length === 0) { container.innerHTML = '<div>📝 No hay notas guardadas.</div>'; return; }
+        container.innerHTML = notes.map((n, idx) => `
+            <div class="card" style="margin-bottom:0.5rem;">
+                ${escapeHtml(n.text)}
+                <button onclick="deleteNote(${idx})" style="margin-left:0.5rem;">🗑️</button>
+            </div>
+        `).join('');
+    }
+    
+    function renderUpcomingEvents() {
+        const container = document.getElementById('upcomingEvents');
+        if (!container) return;
+        const upcoming = tasks.filter(t => t.date && !t.completed).slice(0, 3);
+        if (upcoming.length === 0) { container.innerHTML = '<div>🎉 No hay eventos próximos.</div>'; return; }
+        container.innerHTML = upcoming.map(t => `<div>📌 ${escapeHtml(t.text)} - ${t.date}</div>`).join('');
+    }
+    
+    function renderAll() {
+        renderTasks();
+        renderContacts();
+        renderGoals();
+        renderPhotos();
+        renderNotes();
+        renderUpcomingEvents();
+    }
+    
+    // ========== ACCIONES ==========
+    window.toggleTask = (idx) => { tasks[idx].completed = !tasks[idx].completed; saveAll(); };
+    window.deleteTask = (idx) => { tasks.splice(idx,1); saveAll(); };
+    window.deleteContact = (idx) => { contacts.splice(idx,1); saveAll(); };
+    window.toggleGoal = (idx) => { goals[idx].completed = !goals[idx].completed; saveAll(); };
+    window.deleteGoal = (idx) => { goals.splice(idx,1); saveAll(); };
+    window.deletePhoto = (idx) => { photos.splice(idx,1); saveAll(); };
+    window.deleteNote = (idx) => { notes.splice(idx,1); saveAll(); };
+    
+    document.getElementById('addTaskBtn')?.addEventListener('click', () => {
+        const text = document.getElementById('taskInput').value;
+        const date = document.getElementById('taskDateTime').value;
+        if (!text) return;
+        tasks.push({ text, date, completed: false });
+        document.getElementById('taskInput').value = '';
+        saveAll();
+    });
+    document.getElementById('addContactBtn')?.addEventListener('click', () => {
+        const name = document.getElementById('contactName').value;
+        const email = document.getElementById('contactEmail').value;
+        const phone = document.getElementById('contactPhone').value;
+        if (!name) return;
+        contacts.push({ name, email, phone });
+        document.getElementById('contactName').value = '';
+        document.getElementById('contactEmail').value = '';
+        document.getElementById('contactPhone').value = '';
+        saveAll();
+    });
+    document.getElementById('addGoalBtn')?.addEventListener('click', () => {
+        const title = document.getElementById('goalTitle').value;
+        const deadline = document.getElementById('goalDeadline').value;
+        if (!title) return;
+        goals.push({ title, deadline, completed: false });
+        document.getElementById('goalTitle').value = '';
+        saveAll();
+    });
+    document.getElementById('saveNoteBtn')?.addEventListener('click', () => {
+        const noteText = document.getElementById('quickNote').value;
+        if (!noteText) return;
+        notes.push({ text: noteText, date: new Date().toISOString() });
+        document.getElementById('quickNote').value = '';
+        saveAll();
+    });
+    document.getElementById('photoUpload')?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                photos.push({ data: ev.target.result, date: Date.now() });
+                saveAll();
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // ========== ASISTENTE DE VOZ (SIN CONEXIÓN) ==========
+    let recognition = null;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'es-ES';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+    }
+    
+    function processVoiceCommand(text) {
+        const lower = text.toLowerCase();
+        let response = "";
+        if (lower.includes("tarea") || lower.includes("recordatorio")) {
+            response = "Dime la tarea y te la guardo. Abre la pestaña de tareas para añadirla manualmente.";
+        } else if (lower.includes("contacto") || lower.includes("teléfono")) {
+            response = "Puedes añadir contactos desde la pestaña de contactos.";
+        } else if (lower.includes("meta") || lower.includes("objetivo")) {
+            response = "Registra tus metas en la pestaña de metas.";
+        } else if (lower.includes("foto") || lower.includes("imagen")) {
+            response = "Puedes guardar fotos desde Archivos, pulsa en subir imagen.";
+        } else if (lower.includes("nota")) {
+            response = "Anota lo que quieras en la pestaña Archivos, sección notas rápidas.";
+        } else {
+            response = "Puedo ayudarte con tareas, contactos, metas y archivos. ¿Qué necesitas?";
+        }
+        document.getElementById('assistantMessage').innerHTML = `🧠 Asistente: ${response}`;
+        const msgDiv = document.getElementById('assistantMessage');
+        msgDiv.style.background = '#e0e7ff';
+        setTimeout(() => msgDiv.style.background = '', 1000);
+    }
+    
+    document.getElementById('micMain')?.addEventListener('click', () => {
+        if (recognition) {
+            recognition.start();
+            document.getElementById('voiceStatus').innerHTML = '🎤 Escuchando... habla ahora';
+            recognition.onresult = (event) => {
+                const command = event.results[0][0].transcript;
+                document.getElementById('voiceStatus').innerHTML = `🗣️ Dijiste: "${command}"`;
+                processVoiceCommand(command);
+            };
+            recognition.onend = () => {
+                document.getElementById('voiceStatus').innerHTML = '🎙️ Toca para hablar con tu asistente';
+            };
+        } else {
+            document.getElementById('voiceStatus').innerHTML = '❌ Voz no soportada en este navegador';
+        }
+    });
+    
+    // ========== TABS ==========
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+            document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active-panel'));
+            document.getElementById(`${tabId}Panel`).classList.add('active-panel');
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+        });
+    });
+    
+    function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    
+    renderAll();
+</script>
+</body>
+</html>
